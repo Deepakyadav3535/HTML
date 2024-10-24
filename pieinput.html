@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.anychart.com/releases/8.11.1/js/anychart-core.min.js"></script>
+    <script src="https://cdn.anychart.com/releases/8.11.1/js/anychart-pie.min.js"></script>
+    <title>Dynamic Financial Chart</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            min-height: 100vh;
+            margin: 0;
+            background-color: #f4f4f4;
+        }
+
+        .form-container {
+            margin-bottom: 20px;
+        }
+
+        input {
+            margin: 5px;
+            padding: 8px;
+            width: 100px;
+        }
+
+        #chart-container {
+            width: 600px;
+            height: 450px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="form-container">
+        <input type="number" id="salary" placeholder="Salary" value="" oninput="updateChart()">
+        <input type="number" id="expenses" placeholder="Expenses" value="" oninput="updateChart()">
+        <input type="number" id="savings" placeholder="Savings" value="">
+        <input type="number" id="premium" placeholder="Premium" value="" oninput="updateChart()">
+        <button onclick="updateChart()">Update Chart</button>
+    </div>
+
+    <div id="chart-container"></div>
+
+    <script>
+        let chart;
+
+        // Function to create the chart
+        function createChart(data) {
+            chart = anychart.pie(data);
+
+            // Create a custom palette
+            let palette = anychart.palettes.distinctColors();
+            palette.items([
+                { color: "#4CAF50" },  // Salary - Green
+                { color: "#F44336" },  // Expenses - Red
+                { color: "#2196F3" },  // Savings - Blue
+                { color: "#FFC107" }   // Premium - Yellow
+            ]);
+            chart.palette(palette);
+
+            // Configure the labels
+            chart.labels().format("{%x} — {%value}").fontSize(14).position("outside");
+
+            // Disable the chart legend
+            chart.legend(false);
+
+            // Format the tooltip
+            chart.tooltip().format("Percentage: {%PercentValue}{decimalsCount:1}%");
+
+            // Set chart title
+            // chart.title("Financial Breakdown").fontSize(20);
+            chart.title()
+                .enabled(true)
+                .text("Financial Breakdown")
+                .fontSize(20);
+            // Set the container and draw the chart
+            chart.container("chart-container");
+            chart.draw();
+        }
+
+        // Function to get values from input fields and update the chart
+        function updateChart() {
+            let salary = parseFloat(document.getElementById("salary").value) || 0;
+            let expenses = parseFloat(document.getElementById("expenses").value) || 0;
+
+
+            let savings = salary - expenses;
+
+            let premium = parseFloat(document.getElementById("premium").value) || 0;
+
+            savings = savings - premium;
+
+            let data = [
+                // { x: "Salary", value: salary },
+                { x: "Expenses", value: expenses },
+                { x: "Savings", value: savings },
+                { x: "Premium", value: premium }
+            ];
+
+            chart.data(data); // Update chart data
+        }
+
+        // Initial data
+        let initialData = [
+            { x: "Salary", value: 0 },
+            { x: "Expenses", value: 0 },
+            { x: "Savings", value: 0 },
+            { x: "Premium", value: 0 }
+        ];
+
+        // Create the initial chart
+        anychart.onDocumentReady(function () {
+            createChart(initialData);
+        });
+    </script>
+
+</body>
+
+</html>
